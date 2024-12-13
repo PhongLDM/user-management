@@ -8,12 +8,13 @@ public class JwtResponse {
     private String username;
     private String email;
     private String fullname;
-    private Integer gender;
+    private boolean gender;
     private String phonenumber;
+    private boolean isActive;
     private List<String> roles;
 
     public JwtResponse(String token, Long id, String username, String email, String fullname,
-                       Integer gender, String phonenumber, List<String> roles) {
+                       boolean gender, String phonenumber, boolean isActive, List<String> roles) {
         this.token = token;
         this.id = id;
         this.username = username;
@@ -21,6 +22,7 @@ public class JwtResponse {
         this.fullname = fullname;
         this.gender = gender;
         this.phonenumber = phonenumber;
+        this.isActive = isActive;
         this.roles = roles;
     }
 
@@ -73,11 +75,11 @@ public class JwtResponse {
         this.fullname = fullname;
     }
 
-    public Integer getGender() {
+    public boolean getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(Boolean gender) {
         this.gender = gender;
     }
 
@@ -87,6 +89,14 @@ public class JwtResponse {
 
     public void setPhonenumber(String phonenumber) {
         this.phonenumber = phonenumber;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public List<String> getRoles() {

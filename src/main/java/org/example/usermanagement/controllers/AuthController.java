@@ -17,6 +17,7 @@ import org.example.usermanagement.security.services.UserDetailsImpl;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -65,7 +66,14 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (!userDetails.isActive()) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN) // 403 Forbidden
+                    .body(new MessageResponse("You are blocked from signing in."));
+        }
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
@@ -77,6 +85,7 @@ public class AuthController {
                 userDetails.getFullname(),
                 userDetails.getGender(),
                 userDetails.getPhonenumber(),
+                userDetails.isActive(),
                 roles));
     }
 
@@ -101,7 +110,8 @@ public class AuthController {
                 encoder.encode(signUpRequest.getPassword()),
                 signUpRequest.getFullname(),
                 signUpRequest.getGender(),
-                signUpRequest.getPhonenumber()
+                signUpRequest.getPhonenumber(),
+                true
         );
 
         Set<String> strRoles = signUpRequest.getRole();

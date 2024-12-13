@@ -25,12 +25,14 @@ public class SignupRequest {
     private String fullname;
 
     @NotNull(message = "Gender is required. Please select 0 for male or 1 for female.")
-    private Integer gender;
+    private boolean gender;
 
     @NotBlank(message = "Phone number is required and cannot be blank.")
     @Size(max = 10, message = "Phone number must not exceed 10 characters.")
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Phone number is invalid.")
     private String phonenumber;
+
+    private boolean isActive;
 
     public String getUsername() {
         return username;
@@ -72,11 +74,11 @@ public class SignupRequest {
         this.fullname = fullname;
     }
 
-    public Integer getGender() {
+    public boolean getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(Boolean gender) {
         this.gender = gender;
     }
 
@@ -86,5 +88,13 @@ public class SignupRequest {
 
     public void setPhonenumber(String phonenumber) {
         this.phonenumber = phonenumber;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 }

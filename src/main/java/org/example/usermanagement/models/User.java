@@ -38,11 +38,14 @@ public class User {
     private String fullname;
 
     @Column(nullable = false)
-    private Integer gender; // 0 for male, 1 for female
+    private Boolean gender; // 0 for male, 1 for female
 
     @NotBlank
     @Size(max = 15)
     private String phonenumber;
+
+    @Column(nullable = false)
+    private boolean isActive;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
@@ -53,13 +56,14 @@ public class User {
     public User() {
     }
 
-    public User(String username, String email, String password, String fullname, Integer gender, String phonenumber) {
+    public User(String username, String email, String password, String fullname, Boolean gender, String phonenumber, boolean isActive) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.fullname = fullname;
         this.gender = gender;
         this.phonenumber = phonenumber;
+        this.isActive = isActive;
     }
 
     public Long getId() {
@@ -102,11 +106,11 @@ public class User {
         this.fullname = fullname;
     }
 
-    public Integer getGender() {
+    public Boolean getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(Boolean gender) {
         this.gender = gender;
     }
 
@@ -116,6 +120,14 @@ public class User {
 
     public void setPhonenumber(String phonenumber) {
         this.phonenumber = phonenumber;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public Set<Role> getRoles() {

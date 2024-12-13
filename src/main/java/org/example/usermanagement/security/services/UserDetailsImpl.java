@@ -22,13 +22,14 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
 
     private String fullname;
-    private Integer gender;
+    private boolean gender;
     private String phonenumber;
+    private boolean isActive;
 
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String email, String password,
-                           String fullname, Integer gender, String phonenumber,
+                           String fullname, boolean gender, String phonenumber, boolean isActive,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
@@ -37,6 +38,7 @@ public class UserDetailsImpl implements UserDetails {
         this.fullname = fullname;
         this.gender = gender;
         this.phonenumber = phonenumber;
+        this.isActive = isActive;
         this.authorities = authorities;
     }
 
@@ -53,6 +55,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getFullname(),
                 user.getGender(),
                 user.getPhonenumber(),
+                user.isActive(),
                 authorities);
     }
 
@@ -73,12 +76,20 @@ public class UserDetailsImpl implements UserDetails {
         return fullname;
     }
 
-    public Integer getGender() {
+    public boolean getGender() {
         return gender;
     }
 
     public String getPhonenumber() {
         return phonenumber;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     @Override
