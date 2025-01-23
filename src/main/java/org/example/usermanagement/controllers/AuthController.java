@@ -60,24 +60,32 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        // Xác thực người dùng
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+        // Lưu thông tin xác thực
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Tạo JWT token cho người dùng sau khi xác thực thành công.
         String jwt = jwtUtils.generateJwtToken(authentication);
 
-
+        // Lấy thông tin chi tiết của người dùng từ đối tượng authentication.
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        // Kiểm tra trạng thái hoạt động của người dùng.
         if (!userDetails.isActive()) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN) // 403 Forbidden
                     .body(new MessageResponse("You are blocked from signing in."));
         }
 
+        // Lấy danh sách vai trò của người dùng.
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+        // Trả về token JWT và thông tin người dùng
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
@@ -91,19 +99,21 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        // Kiểm tra xem tên đăng nhập đã tồn tại chưa.
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
+        // Kiểm tra xem email đã tồn tại chưa.
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        // Create new user's account
+        // Tạo tài khoản người dùng mới.
         User user = new User(
                 signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
@@ -114,14 +124,17 @@ public class AuthController {
                 true
         );
 
+        // Xác định Role cho người dùng.
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
+            // Nếu không có vai trò được chỉ định, mặc định là ROLE_USER.
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
+            // Lặp qua danh sách vai trò được gửi từ client.
             strRoles.forEach(role -> {
                 switch (role) {
                     case "admin":
@@ -144,22 +157,27 @@ public class AuthController {
             });
         }
 
+        // Gán vai trò cho người dùng
         user.setRoles(roles);
         userRepository.save(user);
 
+        // Trả về thông báo đăng ký thành công.
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        // Tìm người dùng theo email.
         User user = userRepository.findByEmail(resetPasswordRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Error: User with given email does not exist."));
 
+        // Mã hóa và cập nhật mật khẩu mới.
         String encodedPassword = encoder.encode(resetPasswordRequest.getNewPassword());
         user.setPassword(encodedPassword);
 
         userRepository.save(user);
 
+        // Trả về thông báo đặt lại mật khẩu thành công.
         return ResponseEntity.ok(new MessageResponse("Password reset successfully!"));
     }
 }
