@@ -4,9 +4,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://root:eoKrkivVjtoXEsHGbzWigpwMpMgbacYc@viaduct.proxy.rlwy.net:24033/railway
+    url: jdbc:mysql://localhost:3306/usermanagement
     username: root
-    password: eoKrkivVjtoXEsHGbzWigpwMpMgbacYc
+    password: 12345
 
   jpa:
     show-sql: true

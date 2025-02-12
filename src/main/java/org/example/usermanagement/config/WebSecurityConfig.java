@@ -59,17 +59,20 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
         http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/test/**").permitAll()
-                                .requestMatchers("/api/usermanage/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        // ✅ Allow Swagger without authentication
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/login").permitAll()
+                        // 🔒 Secure other endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/test/**").permitAll()
+                        .requestMatchers("/api/usermanage/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());
-
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 }
